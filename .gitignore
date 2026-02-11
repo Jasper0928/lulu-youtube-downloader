@@ -1,0 +1,6 @@
+downloads/
+python-embed/
+__pycache__/
+*.pyc
+*.zip
+.agent/

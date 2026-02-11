@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuLu's youtube 下載寶</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.95em;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1em;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .options-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .radio-option {
+            flex: 1;
+        }
+
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+
+        .radio-option label {
+            display: block;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            margin-bottom: 0;
+        }
+
+        .radio-option input[type="radio"]:checked+label {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 0.95em;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        select:focus {
+            border-color: #667eea;
+        }
+
+        .advanced-settings {
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            background: #f9f9f9;
+        }
+
+        .advanced-settings summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: #667eea;
+            user-select: none;
+        }
+
+        .advanced-settings summary:hover {
+            color: #764ba2;
+        }
+
+        .setting-item {
+            margin-top: 15px;
+        }
+
+        .setting-item label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .setting-item input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.95em;
+        }
+
+        .setting-item small {
+            display: block;
+            margin-top: 5px;
+            color: #666;
+            font-size: 0.85em;
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            margin-bottom: 20px;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
+        }
+
+        .download-btn:active {
+            transform: translateY(0);
+        }
+
+        .download-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .queue-container {
+            margin-top: 30px;
+        }
+
+        .queue-container h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .queue-count {
+            font-size: 0.8em;
+            color: #999;
+            font-weight: normal;
+        }
+
+        .queue-item {
+            background: linear-gradient(135deg, #f9f9f9 0%, #f5f5f5 100%);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+
+        .queue-item:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .queue-item-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .queue-item-icon {
+            font-size: 1.5em;
+        }
+
+        .queue-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .queue-item-url {
+            font-weight: 600;
+            color: #333;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .queue-item-meta {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 3px;
+        }
+
+        .queue-item-status {
+            font-weight: 700;
+            font-size: 0.95em;
+        }
+
+        .cancel-btn {
+            background: transparent;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 1.3em;
+            padding: 5px;
+            transition: all 0.2s;
+            line-height: 1;
+        }
+
+        .cancel-btn:hover {
+            color: #f44336;
+            transform: scale(1.2);
+        }
+
+        .cancel-btn:active {
+            transform: scale(1);
+        }
+
+        .retry-btn {
+            background: transparent;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 1.3em;
+            padding: 5px;
+            transition: all 0.2s;
+            line-height: 1;
+        }
+
+        .retry-btn:hover {
+            color: #4caf50;
+            transform: scale(1.2);
+        }
+
+        .retry-btn:active {
+            transform: scale(1);
+        }
+
+        .clear-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .clear-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .clear-btn:active {
+            transform: translateY(0);
+        }
+
+        .queue-item-filename,
+        .queue-item-error {
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+
+        .queue-item-filename {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .queue-item-error {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0 5px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            text-align: right;
+            font-size: 0.85em;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .downloads-list {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .downloads-list h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .file-item {
+            padding: 12px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-name {
+            color: #333;
+            font-weight: 600;
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .error-message.active {
+            display: block;
+        }
+
+        .success-message {
+            background: #efe;
+            color: #3c3;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+
+        .success-message.active {
+            display: block;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .downloading {
+            animation: pulse 1.5s infinite;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎬 LuLu's youtube 下載寶</h1>
+        <p class="subtitle">輕鬆備份你喜愛的 YouTube 影片和音樂</p>
+
+        <div class="input-group">
+            <label for="url">YouTube 網址</label>
+            <input type="text" id="url" placeholder="貼上 YouTube 影片連結...">
+        </div>
+
+        <div class="options-row">
+            <div class="input-group">
+                <label>下載類型</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="type-video" name="type" value="video" checked>
+                        <label for="type-video">🎥 影片</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="type-audio" name="type" value="audio">
+                        <label for="type-audio">🎵 音訊</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="quality">品質</label>
+                <select id="quality">
+                    <option value="best">最佳品質</option>
+                    <option value="1080p">1080p (影片)</option>
+                    <option value="720p">720p (影片)</option>
+                    <option value="480p">480p (影片)</option>
+                </select>
+            </div>
+        </div>
+
+        <details class="advanced-settings">
+            <summary>⚙️ 進階設定</summary>
+            <div class="setting-item">
+                <label for="max-retries">錯誤重試上限</label>
+                <input type="number" id="max-retries" value="0" min="0" placeholder="0 = 不限制">
+                <small>當下載遇到錯誤重試超過此次數時自動終止（設為 0 則不限制）</small>
+            </div>
+            <div class="setting-item">
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <input type="checkbox" id="compatible-mode" style="width: 20px; height: 20px;">
+                    <span>🚗 汽車/舊設備相容模式 (強制 H.264)</span>
+                </label>
+                <small>解決在汽車播放器上「有聲無影」的問題（強制使用 H.264 影像編碼）</small>
+            </div>
+        </details>
+
+        <button class="download-btn" onclick="startDownload()">
+            加入下載隊列
+        </button>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <div class="queue-container" id="queueContainer" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;">📋 下載隊列 <span id="queueCount" class="queue-count"></span></h2>
+                <button class="clear-btn" onclick="clearCompletedTasks()">🗑️ 清除已完成/失敗</button>
+            </div>
+            <div id="queueList"></div>
+        </div>
+
+        <div class="downloads-list" id="downloadsList" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;">📁 已下載檔案</h2>
+                <button class="clear-btn" onclick="clearFilesList()">🗑️ 清除列表</button>
+            </div>
+            <div id="filesContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        let updateInterval = null;
+
+        // 監聽類型切換，更新品質選項
+        document.querySelectorAll('input[name="type"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                const quality = document.getElementById('quality');
+                if (this.value === 'audio') {
+                    quality.innerHTML = `
+                        <option value="best">最佳品質</option>
+                        <option value="320">320kbps</option>
+                        <option value="256">256kbps</option>
+                        <option value="192">192kbps</option>
+                        <option value="128">128kbps</option>
+                    `;
+                } else {
+                    quality.innerHTML = `
+                        <option value="best">最佳品質</option>
+                        <option value="1080p">1080p</option>
+                        <option value="720p">720p</option>
+                        <option value="480p">480p</option>
+                    `;
+                }
+            });
+        });
+
+        async function startDownload() {
+            const url = document.getElementById('url').value.trim();
+            const type = document.querySelector('input[name="type"]:checked').value;
+            const quality = document.getElementById('quality').value;
+            const maxRetries = parseInt(document.getElementById('max-retries').value) || 0;
+            const compatibleMode = document.getElementById('compatible-mode').checked;
+
+            // 隱藏錯誤訊息
+            document.getElementById('errorMessage').classList.remove('active');
+
+            if (!url) {
+                showError('請輸入 YouTube 網址！');
+                return;
+            }
+
+            try {
+                const response = await fetch('/download', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url, type, quality, max_retries: maxRetries, compatible_mode: compatibleMode })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // 清空輸入框
+                    document.getElementById('url').value = '';
+
+                    // 啟動自動更新
+                    startAutoUpdate();
+
+                    // 立即更新一次隊列
+                    updateQueue();
+                } else {
+                    showError(data.error || '下載失敗');
+                }
+            } catch (error) {
+                showError('網路錯誤：' + error.message);
+            }
+        }
+
+        function startAutoUpdate() {
+            if (!updateInterval) {
+                updateInterval = setInterval(updateQueue, 1000);
+            }
+        }
+
+        function stopAutoUpdate() {
+            if (updateInterval) {
+                clearInterval(updateInterval);
+                updateInterval = null;
+            }
+        }
+
+        async function updateQueue() {
+            try {
+                const response = await fetch('/queue');
+                const data = await response.json();
+
+                if (data.tasks && data.tasks.length > 0) {
+                    displayQueue(data.tasks, data.queue_size);
+
+                    // 檢查是否有任務還在進行中
+                    const hasActiveTask = data.tasks.some(task =>
+                        task.status === '等待中' || task.status === '下載中'
+                    );
+
+                    if (!hasActiveTask) {
+                        // 所有任務完成，停止自動更新
+                        stopAutoUpdate();
+                        loadDownloadsList();
+                    }
+                } else {
+                    // 沒有任務，隱藏隊列容器
+                    document.getElementById('queueContainer').style.display = 'none';
+                    stopAutoUpdate();
+                }
+            } catch (error) {
+                console.error('更新隊列失敗', error);
+            }
+        }
+
+        function displayQueue(tasks, queueSize) {
+            const container = document.getElementById('queueContainer');
+            const queueList = document.getElementById('queueList');
+            const queueCount = document.getElementById('queueCount');
+
+            container.style.display = 'block';
+            queueCount.textContent = `(${tasks.length} 個任務)`;
+
+            queueList.innerHTML = tasks.map(task => {
+                const iconMap = {
+                    'video': '🎥',
+                    'audio': '🎵'
+                };
+
+                const statusColorMap = {
+                    '等待中': '#999',
+                    '下載中': '#667eea',
+                    '完成': '#4caf50',
+                    '失敗': '#f44336',
+                    '已取消': '#ff9800'
+                };
+
+                const statusColor = statusColorMap[task.status] || '#999';
+                const icon = iconMap[task.type] || '📄';
+
+                // 是否可以取消
+                const canCancel = task.status === '等待中' || task.status === '下載中';
+                // 是否可以重試
+                const canRetry = task.status === '失敗';
+
+                // 截短 URL 顯示
+                const shortUrl = task.url.length > 50 ?
+                    task.url.substring(0, 50) + '...' : task.url;
+
+                return `
+                    <div class="queue-item">
+                        <div class="queue-item-header">
+                            <div class="queue-item-icon">${icon}</div>
+                            <div class="queue-item-info">
+                                <div class="queue-item-url" title="${task.url}">${shortUrl}</div>
+                                <div class="queue-item-meta">
+                                    ${task.quality} · 加入時間: ${task.added_time}
+                                </div>
+                            </div>
+                            <div class="queue-item-status" style="color: ${statusColor}">
+                                ${task.status}
+                            </div>
+                            ${canCancel ? `
+                                <button class="cancel-btn" onclick="cancelTask('${task.task_id}')" title="取消下載">
+                                    ✕
+                                </button>
+                            ` : ''}
+                            ${canRetry ? `
+                                <button class="retry-btn" onclick="retryTask('${task.task_id}')" title="重新下載">
+                                    🔄
+                                </button>
+                            ` : ''}
+                        </div>
+                        ${task.status === '下載中' ? `
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${task.progress}%"></div>
+                            </div>
+                            <div class="progress-text">${Math.round(task.progress)}%</div>
+                        ` : ''}
+                        ${task.status === '完成' && task.filename ? `
+                            <div class="queue-item-filename">✅ ${task.filename}</div>
+                        ` : ''}
+                        ${task.status === '失敗' && task.error ? `
+                            <div class="queue-item-error">❌ ${task.error}</div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('active');
+        }
+
+        async function cancelTask(taskId) {
+            if (!confirm('確定要取消這個下載任務嗎？')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/cancel/${taskId}`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    // 立即更新隊列顯示
+                    updateQueue();
+                } else {
+                    showError(data.error || '取消失敗');
+                }
+            } catch (error) {
+                showError('取消失敗：' + error.message);
+            }
+        }
+
+        async function retryTask(taskId) {
+            try {
+                const response = await fetch(`/retry/${taskId}`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    // 立即更新隊列顯示
+                    updateQueue();
+                    // 確保自動更新啟動
+                    startAutoUpdate();
+                } else {
+                    showError(data.error || '重試失敗');
+                }
+            } catch (error) {
+                showError('重試失敗：' + error.message);
+            }
+        }
+
+        async function clearCompletedTasks() {
+            if (!confirm('確定要清除所有已完成和失敗的任務嗎？')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/clear-history', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    // 立即更新隊列
+                    updateQueue();
+                } else {
+                    showError('清除失敗');
+                }
+            } catch (error) {
+                showError('清除失敗：' + error.message);
+            }
+        }
+
+        async function clearFilesList() {
+            if (!confirm('確定要清除已下載檔案列表嗎？\n（不會刪除實際檔案，僅清除列表顯示）')) {
+                return;
+            }
+
+            // 直接隱藏已下載檔案區域
+            document.getElementById('downloadsList').style.display = 'none';
+            document.getElementById('filesContainer').innerHTML = '';
+        }
+
+        async function loadDownloadsList() {
+            try {
+                const response = await fetch('/downloads');
+                const data = await response.json();
+
+                if (data.files && data.files.length > 0) {
+                    const container = document.getElementById('filesContainer');
+                    container.innerHTML = data.files.map(file => `
+                        <div class="file-item">
+                            <div class="file-name">📄 ${file.name}</div>
+                        </div>
+                    `).join('');
+                    document.getElementById('downloadsList').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('載入檔案列表失敗', error);
+            }
+        }
+
+        // 頁面載入時檢查已下載檔案和隊列
+        loadDownloadsList();
+        updateQueue();
+        startAutoUpdate();
+    </script>
+</body>
+
+</html>
