@@ -3,4 +3,5 @@ python-embed/
 __pycache__/
 *.pyc
 *.zip
+yt-dlp.exe
 .agent/

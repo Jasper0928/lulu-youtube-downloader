@@ -37,6 +37,21 @@ echo.
 pause
 
 :run
+REM 檢查是否已有 yt-dlp.exe
+if exist "%~dp0yt-dlp.exe" goto :start
+
+echo.
+echo 正在下載 yt-dlp...
+powershell -Command "& {Invoke-WebRequest -Uri 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe' -OutFile 'yt-dlp.exe'}"
+
+if not exist "%~dp0yt-dlp.exe" (
+    echo yt-dlp 下載失敗，請檢查網路連線。
+    pause
+    exit /b 1
+)
+echo yt-dlp 下載完成！
+
+:start
 echo ====================================
 echo   LuLu's YouTube 下載寶
 echo ====================================
